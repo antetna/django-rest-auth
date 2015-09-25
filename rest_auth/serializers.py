@@ -6,6 +6,8 @@ try:
 except:
     # make compatible with django 1.5
     from django.utils.http import base36_to_int as uid_decoder
+
+from django.utils.encoding import force_text
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.translation import ugettext_lazy as _
 
@@ -149,7 +151,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
         UserModel = get_user_model()
         # Decode the uidb64 to uid to get User object
         try:
-            uid = uid_decoder(attrs['uid'])
+            uid = force_text(uid_decoder(attrs['uid']))
             self.user = UserModel._default_manager.get(pk=uid)
         except (TypeError, ValueError, OverflowError, UserModel.DoesNotExist):
             raise ValidationError({'uid': ['Invalid value']})
